@@ -12,7 +12,7 @@ public class NotionRepository {
         this.notionClient = notionClient;
     }
 
-    public List<Page> findAllIngredient() {
+    public List<Page> findAllIngredients() {
         return null;
     }
 }

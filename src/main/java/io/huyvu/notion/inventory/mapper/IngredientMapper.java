@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IngredientMapper {
     @Select("""
-            SELECT * 
+            SELECT *
               FROM INGREDIENT
             """)
     List<LDBIngredient> getIngredients();

@@ -3,7 +3,7 @@ package io.huyvu.notion.inventory;
 public class NotionConfig {
 
 
-    private static final String SQLITE_PATH = "notion-inventory-sqlite.db";
+    private static final String SQLITE_PATH = "jdbc:sqlite:notion-inventory-sqlite.db";
     private static final String MAPPERS_PATH = "io.huyvu.notion.inventory.mapper";
     private String NOTION_API_KEY = System.getenv("NOTION_API_KEY");
     public String NOTION_MEAL_PLAN_DB_ID = System.getenv("NOTION_MEAL_PLAN_DB_ID");

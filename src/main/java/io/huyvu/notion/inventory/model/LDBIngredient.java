@@ -1,4 +1,4 @@
 package io.huyvu.notion.inventory.model;
 
-public class LDBIngredient {
+public class LDBIngredient extends LDBPage {
 }

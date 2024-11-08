@@ -1,5 +1,7 @@
 package io.huyvu.notion.inventory;
 
+import io.huyvu.notion.inventory.model.LDBIngredient;
+import io.huyvu.notion.inventory.repository.LocalRepository;
 import notion.api.v1.model.pages.Page;
 
 import java.util.List;
@@ -12,7 +14,7 @@ public class NotionEventListener {
     };
 
     public NotionEventListener(NotionRepository notionRepo, LocalRepository localRepository) {
-        notionRepository = notionRepo;
+        this.notionRepository = notionRepo;
         this.localRepository = localRepository;
     }
 
@@ -22,8 +24,8 @@ public class NotionEventListener {
     }
 
     private boolean isAnyIngredientTitleUpdated() {
-        List<Page> ingredients = notionRepository.findAllIngredient();
-
+        List<Page> ingredients = notionRepository.findAllIngredients();
+        List<LDBIngredient> ldbIngredients = localRepository.findAllIngredients();
         return false;
     }
 

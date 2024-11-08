@@ -20,6 +20,7 @@ public class ApplicationRunner {
                 eventListener.listen();
                 Thread.sleep(config.getInterval());
             } catch (InterruptedException e) {
+                logger.error(e.getMessage());
                 throw new RuntimeException(e);
             }
         }
