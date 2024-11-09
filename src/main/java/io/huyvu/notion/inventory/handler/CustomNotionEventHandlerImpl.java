@@ -15,4 +15,5 @@ public class CustomNotionEventHandlerImpl extends NotionEventHandlerImpl{
         super.onAnyIngredientTitleUpdated(page);
         localRepository.saveIngredient(page);
     }
+
 }

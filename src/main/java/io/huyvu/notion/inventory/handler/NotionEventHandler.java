@@ -6,4 +6,10 @@ public interface NotionEventHandler {
     void onAnyIngredientTitleUpdated(Page page);
 
     void onAfterAnyIngredientTitleUpdated();
+
+    void onNotThingChange();
+
+    void onRecipeTitleUpdated(Page page);
+
+    void onRecipeIngredientsUpdated(Page ndbRecipe);
 }

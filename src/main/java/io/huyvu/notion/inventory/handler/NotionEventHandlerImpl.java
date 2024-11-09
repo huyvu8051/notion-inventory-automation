@@ -17,4 +17,19 @@ public class NotionEventHandlerImpl implements NotionEventHandler {
     public void onAfterAnyIngredientTitleUpdated() {
         logger.info("onAfterAnyIngredientTitleUpdated");
     }
+
+    @Override
+    public void onNotThingChange() {
+        logger.info("onNotThingChange");
+    }
+
+    @Override
+    public void onRecipeTitleUpdated(Page page) {
+        logger.info("onRecipeTitleUpdated");
+    }
+
+    @Override
+    public void onRecipeIngredientsUpdated(Page ndbRecipe) {
+        logger.info("onRecipeIngredientsUpdated");
+    }
 }

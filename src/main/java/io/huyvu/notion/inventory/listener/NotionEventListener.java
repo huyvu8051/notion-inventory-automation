@@ -3,11 +3,13 @@ package io.huyvu.notion.inventory.listener;
 import io.huyvu.notion.inventory.NotionPageUtils;
 import io.huyvu.notion.inventory.handler.NotionEventHandler;
 import io.huyvu.notion.inventory.model.LDBComparableTitle;
+import io.huyvu.notion.inventory.model.LDBRecipe;
 import io.huyvu.notion.inventory.repository.LocalRepository;
 import io.huyvu.notion.inventory.repository.NotionRepository;
 import notion.api.v1.model.pages.Page;
 
 import java.util.List;
+import java.util.Optional;
 
 public class NotionEventListener {
     private final NotionRepository notionRepository;
@@ -51,6 +53,11 @@ public class NotionEventListener {
         //var anyRecipeUpdatedResult = isAnyRecipeUpdated();
 
 
+        if(!isAnyIngredientTitleUpdated) {
+            notionEventHandler.onNotThingChange();
+        }
+
+
     }
 
     private AnyRecipeUpdatedResult isAnyRecipeUpdated() {
@@ -58,10 +65,21 @@ public class NotionEventListener {
         boolean isIngredientsUpdated = false;
         var ndbRecipes = notionRepository.findAllRecipes();
         for (Page ndbRecipe : ndbRecipes) {
-            localRepository.findRecipeById(ndbRecipe.getId());
+            var optionalLDBRecipe = localRepository.findRecipeById(ndbRecipe.getId());
+            if (optionalLDBRecipe.isEmpty() || isTitleDifference(ndbRecipe, optionalLDBRecipe.get())) {
+                notionEventHandler.onRecipeTitleUpdated(ndbRecipe);
+            }
+
+            if(optionalLDBRecipe.isEmpty() || isIngredientsUpdated(ndbRecipe)) {
+                notionEventHandler.onRecipeIngredientsUpdated(ndbRecipe);
+            }
         }
 
         return new AnyRecipeUpdatedResult(isTitleUpdated, isIngredientsUpdated);
+    }
+
+    private boolean isIngredientsUpdated(Page ndbRecipe) {
+        return false;
     }
 
     private record AnyRecipeUpdatedResult(boolean isAnyTitleUpdated, boolean isIngredientsUpdated) {
