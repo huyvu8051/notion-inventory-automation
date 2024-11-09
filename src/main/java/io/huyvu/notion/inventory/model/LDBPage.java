@@ -2,6 +2,7 @@ package io.huyvu.notion.inventory.model;
 
 public class LDBPage {
     private String id;
+    private String uniqueId;
     private String lastEditedTime;
 
     public String getId() {
@@ -18,5 +19,13 @@ public class LDBPage {
 
     public void setLastEditedTime(String lastEditedTime) {
         this.lastEditedTime = lastEditedTime;
+    }
+
+    public String getUniqueId() {
+        return uniqueId;
+    }
+
+    public void setUniqueId(String uniqueId) {
+        this.uniqueId = uniqueId;
     }
 }

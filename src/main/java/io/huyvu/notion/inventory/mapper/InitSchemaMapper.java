@@ -2,7 +2,7 @@ package io.huyvu.notion.inventory.mapper;
 
 import org.apache.ibatis.annotations.Insert;
 
-public interface InitSchema {
+public interface InitSchemaMapper {
 
     @Insert("""
             CREATE TABLE IF NOT EXISTS ingredients

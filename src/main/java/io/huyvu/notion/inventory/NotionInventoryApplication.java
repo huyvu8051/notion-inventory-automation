@@ -1,8 +1,12 @@
 package io.huyvu.notion.inventory;
 
+import io.huyvu.notion.inventory.handler.CustomNotionEventHandlerImpl;
+import io.huyvu.notion.inventory.handler.NotionEventHandlerImpl;
+import io.huyvu.notion.inventory.listener.NotionEventListener;
 import io.huyvu.notion.inventory.mapper.IngredientMapper;
-import io.huyvu.notion.inventory.mapper.InitSchema;
+import io.huyvu.notion.inventory.mapper.InitSchemaMapper;
 import io.huyvu.notion.inventory.mapper.MealPlanMapper;
+import io.huyvu.notion.inventory.mapper.RecipeMapper;
 import io.huyvu.notion.inventory.repository.NotionRepository;
 import notion.api.v1.NotionClient;
 import org.apache.ibatis.mapping.Environment;
@@ -24,7 +28,6 @@ public class NotionInventoryApplication {
         var config = NotionConfig.useDefault();
 
         var notionClient = new NotionClient(config.getNotionApiKey());
-
         var notionRepo = new NotionRepository(notionClient);
 
         SQLiteDataSource dataSource = new SQLiteDataSource();
@@ -42,15 +45,12 @@ public class NotionInventoryApplication {
         var sqlSession = sqlSessionFactory.openSession();
         var ingredientMapper = sqlSession.getMapper(IngredientMapper.class);
         var mealPlanMapper = sqlSession.getMapper(MealPlanMapper.class);
+        var recipeMapper = sqlSession.getMapper(RecipeMapper.class);
 
-        var localRepository = new LocalRepositoryImpl(ingredientMapper, mealPlanMapper);
+        var localRepository = new LocalRepositoryImpl(sqlSession, ingredientMapper, mealPlanMapper, recipeMapper);
 
-        var eventListener = new NotionEventListener(notionRepo, localRepository);
-
-        eventListener.setOnAnyIngredientTitleUpdated(page -> {
-            logger.info("On any ingredient title updated");
-        });
-
+        NotionEventHandlerImpl notionEventHandler = new CustomNotionEventHandlerImpl(localRepository);
+        var eventListener = new NotionEventListener(notionRepo, localRepository, notionEventHandler);
 
         ApplicationRunner applicationRunner = new ApplicationRunner(config, eventListener);
         applicationRunner.run();
@@ -60,7 +60,7 @@ public class NotionInventoryApplication {
 
     private static void initDatabaseSchema(SqlSessionFactory sqlSessionFactory) {
         try (var sqlSession = sqlSessionFactory.openSession()) {
-            var mapper = sqlSession.getMapper(InitSchema.class);
+            var mapper = sqlSession.getMapper(InitSchemaMapper.class);
             mapper.createIngredients();
             mapper.createMealPlans();
             mapper.createRecipes();

@@ -1,5 +1,6 @@
 package io.huyvu.notion.inventory;
 
+import io.huyvu.notion.inventory.listener.NotionEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,12 +19,15 @@ public class ApplicationRunner {
         while (true) {
             try {
                 eventListener.listen();
-                Thread.sleep(config.getInterval());
-            } catch (InterruptedException e) {
-                logger.error(e.getMessage());
-                throw new RuntimeException(e);
             }catch (Exception e){
                 logger.error(e.getMessage());
+                e.printStackTrace();
+            }finally {
+                try {
+                    Thread.sleep(config.getInterval());
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
