@@ -6,6 +6,7 @@ import io.huyvu.notion.inventory.model.LDBIngredient;
 import io.huyvu.notion.inventory.repository.LocalRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public class LocalRepositoryImpl implements LocalRepository {
     private final IngredientMapper ingredientMapper;
@@ -16,8 +17,9 @@ public class LocalRepositoryImpl implements LocalRepository {
         this.mealPlanMapper = mealPlanMapper;
     }
 
+
     @Override
-    public List<LDBIngredient> findAllIngredients() {
-        return null;
+    public Optional<LDBIngredient> findIngredientById(String id) {
+        return ingredientMapper.findById(id);
     }
 }

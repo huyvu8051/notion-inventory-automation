@@ -3,12 +3,16 @@ package io.huyvu.notion.inventory.mapper;
 import io.huyvu.notion.inventory.model.LDBIngredient;
 import org.apache.ibatis.annotations.Select;
 
-import java.util.List;
+import java.util.Optional;
+
 
 public interface IngredientMapper {
     @Select("""
-            SELECT *
-              FROM INGREDIENT
+            SELECT id
+                 , title
+                 , last_edited_time
+              FROM ingredients
+             WHERE id = ${id}
             """)
-    List<LDBIngredient> getIngredients();
+    Optional<LDBIngredient> findById(String id);
 }

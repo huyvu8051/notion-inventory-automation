@@ -22,6 +22,8 @@ public class ApplicationRunner {
             } catch (InterruptedException e) {
                 logger.error(e.getMessage());
                 throw new RuntimeException(e);
+            }catch (Exception e){
+                logger.error(e.getMessage());
             }
         }
     }

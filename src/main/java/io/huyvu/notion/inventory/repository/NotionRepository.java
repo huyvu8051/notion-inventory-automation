@@ -1,4 +1,4 @@
-package io.huyvu.notion.inventory;
+package io.huyvu.notion.inventory.repository;
 
 import notion.api.v1.NotionClient;
 import notion.api.v1.model.pages.Page;
