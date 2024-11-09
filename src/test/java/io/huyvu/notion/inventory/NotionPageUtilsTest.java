@@ -18,28 +18,26 @@ import java.util.Properties;
 import static org.junit.jupiter.api.Assertions.*;
 
 class NotionPageUtilsTest {
+    Page page = null;
 
     @BeforeEach
     void setUp() {
-
-    }
-
-    @Test
-    void getUniqueId() {
         var properties = new HashMap<String, PageProperty>();
 
         PageProperty.UniqueId uniqueId = new PageProperty.UniqueId();
         uniqueId.setPrefix("TEST");
         uniqueId.setNumber(69);
 
-
         var value = new PageProperty("002", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, uniqueId);
         value.setType(PropertyType.UniqueId);
 
-
         properties.put("title", value);
-        var page = new Page(ObjectType.Page, "001", new Icon() {}, new Cover() {
+        page = new Page(ObjectType.Page, "001", new Icon() {}, new Cover() {
         }, "", new User(""), "", new User(""), "", null, null, null, properties, null, null);
+    }
+
+    @Test
+    void getUniqueId() {
         var result = NotionPageUtils.getUniqueId(page);
         assertEquals(result, "TEST-69");
 
