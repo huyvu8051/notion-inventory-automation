@@ -17,6 +17,10 @@ public class ApplicationRunner {
 
 
     public void run() {
+
+        var chungTaCuaHienTai = new Thread(() -> logger.debug("Chung ta cua hien tai"));
+        chungTaCuaHienTai.start();
+
         while (true) {
             try {
                 eventListener.listen();

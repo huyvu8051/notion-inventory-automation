@@ -60,6 +60,7 @@ public class NotionInventoryApplication {
     }
 
     private static void initDatabaseSchema(SqlSessionFactory sqlSessionFactory) {
+        logger.info("Initializing database schema...");
         try (var sqlSession = sqlSessionFactory.openSession()) {
             var mapper = sqlSession.getMapper(InitSchemaMapper.class);
             mapper.createIngredients();
@@ -68,8 +69,11 @@ public class NotionInventoryApplication {
             mapper.createRecipeIngredients();
             mapper.createMealPlanRecipes();
             sqlSession.commit();
+            logger.info("Database schema initialized successfully.");
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("Error during database schema initialization", e);
+            throw new IllegalStateException("Database initialization failed", e);
         }
+
     }
 }

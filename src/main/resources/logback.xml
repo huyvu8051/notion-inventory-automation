@@ -1,32 +1,32 @@
 <configuration>
 
-    <!-- Appender cho file log xoay vòng -->
+    <!-- Appender for rolling file logs -->
     <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <!-- File log hiện tại -->
+        <!-- Current log file -->
         <file>logs/application.log</file>
 
-        <!-- Chính sách xoay vòng theo thời gian -->
+        <!-- Rolling policy based on time -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- Tên file log xoay vòng -->
+            <!-- Rolled log file name pattern -->
             <fileNamePattern>logs/application.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <!-- Lưu trữ tối đa 7 ngày -->
+            <!-- Keep logs for a maximum of 7 days -->
             <maxHistory>7</maxHistory>
         </rollingPolicy>
 
         <encoder>
-            <!-- Định dạng log -->
+            <!-- Log message format -->
             <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- Appender cho console -->
+    <!-- Appender for console logs -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-
+    <!-- Appender for error logs -->
     <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/error.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -38,11 +38,15 @@
         </encoder>
     </appender>
 
-    <root level="info">
+    <!-- Root logger configuration -->
+    <root level="${LOG_LEVEL:-INFO}">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="ROLLING_FILE"/>
-        <appender-ref ref="ERROR_FILE"/>
     </root>
 
+    <!-- Logger specifically for ERROR level -->
+    <logger name="ERROR_LOGGER" level="ERROR" additivity="false">
+        <appender-ref ref="ERROR_FILE"/>
+    </logger>
 
 </configuration>
