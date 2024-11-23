@@ -4,6 +4,9 @@ import io.huyvu.notion.inventory.listener.NotionEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+
 public class ApplicationRunner {
     private final NotionEventListener eventListener;
     private final NotionConfig config;
@@ -20,13 +23,12 @@ public class ApplicationRunner {
             try {
                 eventListener.listen();
             }catch (Exception e){
-                logger.error(e.getMessage());
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
             }finally {
                 try {
                     Thread.sleep(config.getInterval());
                 } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    Thread.currentThread().interrupt();
                 }
             }
         }

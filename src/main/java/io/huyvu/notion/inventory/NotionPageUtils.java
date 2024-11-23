@@ -1,5 +1,6 @@
 package io.huyvu.notion.inventory;
 
+import io.huyvu.notion.inventory.exception.PagePropertyAccessException;
 import notion.api.v1.model.common.PropertyType;
 import notion.api.v1.model.pages.Page;
 import notion.api.v1.model.pages.PageProperty;
@@ -8,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 
 public class NotionPageUtils {
+    private NotionPageUtils(){}
 
     @NotNull
     public static String getPageTitle(Page page) {
@@ -21,7 +23,7 @@ public class NotionPageUtils {
         }
 
         if (pageTitleProperty == null) {
-            throw new RuntimeException("Page title property not found.");
+            throw new PagePropertyAccessException("Page title property not found.");
         }
         var titles = pageTitleProperty.getTitle();
         if (titles == null) {
@@ -50,11 +52,11 @@ public class NotionPageUtils {
         }
 
         if (pageUniqueProperty == null) {
-            throw new RuntimeException("Page unique id property not found.");
+            throw new PagePropertyAccessException("Page unique id property not found.");
         }
         var uniqueId = pageUniqueProperty.getUniqueId();
         if (uniqueId == null) {
-            throw new RuntimeException("Page unique id property is null");
+            throw new PagePropertyAccessException("Page unique id property is null");
         }
 
         return uniqueId.getPrefix() + "-" + uniqueId.getNumber();

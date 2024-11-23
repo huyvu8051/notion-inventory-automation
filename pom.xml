@@ -84,7 +84,6 @@
                         <version>2.2.1</version>
                     </docletArtifact>
                     <additionalOptions>
-                        <!--<additionalOption>...</additionalOption>-->
                     </additionalOptions>
                 </configuration>
             </plugin>

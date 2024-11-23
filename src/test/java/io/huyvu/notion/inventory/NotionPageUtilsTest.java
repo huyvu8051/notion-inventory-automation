@@ -4,19 +4,16 @@ import notion.api.v1.model.common.Cover;
 import notion.api.v1.model.common.Icon;
 import notion.api.v1.model.common.ObjectType;
 import notion.api.v1.model.common.PropertyType;
-import notion.api.v1.model.databases.DatabaseProperty;
 import notion.api.v1.model.pages.Page;
 import notion.api.v1.model.pages.PageProperty;
-import notion.api.v1.model.pages.PagePropertyItem;
 import notion.api.v1.model.users.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Properties;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class NotionPageUtilsTest {
     Page page = null;
@@ -40,11 +37,12 @@ class NotionPageUtilsTest {
 
         properties.put("unique_id", uniqueIdProp);
         properties.put("title", titleProp);
-        page = new Page(ObjectType.Page, "001", new Icon() {}, new Cover() {
+        page = new Page(ObjectType.Page, "001", new Icon() {
+        }, new Cover() {
         }, "", new User(""), "", new User(""), "", null, null, null, properties, null, null);
     }
 
-    @Test()
+    @Test
     void getUniqueId() {
         var result = NotionPageUtils.getUniqueId(page);
         assertEquals("TEST-69", result);
