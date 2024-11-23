@@ -27,7 +27,7 @@ public class NotionPageUtils {
         }
         var titles = pageTitleProperty.getTitle();
         if (titles == null) {
-            throw new RuntimeException("Page title property is null");
+            throw new PagePropertyAccessException("Page title property is null");
         }
 
         if (titles.isEmpty()) {
