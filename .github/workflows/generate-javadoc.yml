@@ -1,0 +1,31 @@
+name: Generate Javadoc
+
+on:
+  push:
+    branches:
+      - main  # Thay 'main' bằng nhánh chính của bạn
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'  # Thay bằng phiên bản Java bạn đang sử dụng
+
+      - name: Build Javadoc
+        run: |
+          mvn clean javadoc:javadoc # Nếu dùng Maven
+          # gradle javadoc         # Nếu dùng Gradle
+
+      - name: Deploy Javadoc to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./target/site/apidocs # Đường dẫn đến Javadoc
