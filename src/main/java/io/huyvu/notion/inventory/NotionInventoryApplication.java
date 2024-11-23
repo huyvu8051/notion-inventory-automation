@@ -9,6 +9,9 @@ import io.huyvu.notion.inventory.mapper.MealPlanMapper;
 import io.huyvu.notion.inventory.mapper.RecipeMapper;
 import io.huyvu.notion.inventory.repository.NotionRepository;
 import notion.api.v1.NotionClient;
+import notion.api.v1.logging.NotionLogger;
+import notion.api.v1.logging.Slf4jLogger;
+import notion.api.v1.logging.StdoutLogger;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -28,6 +31,7 @@ public class NotionInventoryApplication {
         var config = NotionConfig.useDefault();
 
         var notionClient = new NotionClient(config.getNotionApiKey());
+        notionClient.setLogger(new NotionSlf4jLoggerDelegate());
         var notionRepo = new NotionRepository(notionClient);
 
         SQLiteDataSource dataSource = new SQLiteDataSource();
