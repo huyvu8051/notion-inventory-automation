@@ -1,0 +1,15 @@
+# Gắn nhãn dựa trên thư mục hoặc file thay đổi
+dependencies:
+  - "pom.xml"                    # Khi pom.xml thay đổi
+  - ".github/workflows/*"        # Khi các tệp workflow thay đổi
+
+backend:
+  - "src/main/java/**"           # Tất cả các tệp mã nguồn Java
+  - "src/main/resources/**"      # Các tệp cấu hình trong resources
+
+tests:
+  - "src/test/java/**"           # Các tệp kiểm thử
+
+documentation:
+  - "docs/**"                    # Các tệp trong thư mục docs
+  - "**/*.md"                    # Tệp Markdown bất kỳ
