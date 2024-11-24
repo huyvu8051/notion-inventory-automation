@@ -21,6 +21,11 @@ public class LimitedRequestHttpClient implements NotionHttpClient {
         this.executor = new ScheduledThreadPoolExecutor(1);
     }
 
+    public LimitedRequestHttpClient(NotionHttpClient delegate) {
+        this.delegate = delegate;
+        this.executor = new ScheduledThreadPoolExecutor(1);
+    }
+
     public LimitedRequestHttpClient(@NotNull NotionHttpClient delegate, @NotNull ScheduledExecutorService executor) {
         this.delegate = delegate;
         this.executor = executor;

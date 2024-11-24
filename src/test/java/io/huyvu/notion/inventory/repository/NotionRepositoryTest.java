@@ -1,13 +1,17 @@
 package io.huyvu.notion.inventory.repository;
 
-import io.huyvu.notion.inventory.NotionConfig;
-import io.huyvu.notion.inventory.NotionInventoryApplication;
+import io.huyvu.notion.inventory.*;
+import notion.api.v1.NotionClient;
+import notion.api.v1.http.JavaNetHttpClient;
 import notion.api.v1.http.NotionHttpClient;
+import notion.api.v1.http.NotionHttpResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -23,15 +27,12 @@ class NotionRepositoryTest {
     private NotionHttpClient httpClient;
 
     @BeforeEach
-    void setUp() {
-
-        var notionConfig = NotionConfig.useDefault();
-        var notionClient = NotionInventoryApplication.getNotionClient(notionConfig);
-        httpClient = notionClient.getHttpClient();
-        httpClient = spy(httpClient);
-        notionClient.setHttpClient(httpClient);
-
-
+    void setUp() throws IOException {
+        var notionClient = new NotionClient();
+        httpClient = mock(NotionHttpClient.class);
+        when(httpClient.postTextBody(any(), any(), any(), any(), any()))
+                .thenReturn(new NotionHttpResponse(200, TestUtils.readFileAsString("ingredients.json"), new HashMap<>()));
+        notionClient.setHttpClient(new LimitedRequestHttpClient(httpClient));
         notionRepository = new NotionRepository(notionClient);
 
     }
