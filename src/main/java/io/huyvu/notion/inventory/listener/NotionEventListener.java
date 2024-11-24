@@ -50,8 +50,13 @@ public class NotionEventListener {
         }
 
 
-        //var anyRecipeUpdatedResult = isAnyRecipeUpdated();
-
+        var anyRecipeUpdatedResult = isAnyRecipeUpdated();
+        if(anyRecipeUpdatedResult.isAnyTitleUpdated) {
+            notionEventHandler.onAnyRecipeTitleUpdated();
+        }
+        if(anyRecipeUpdatedResult.isIngredientsUpdated){
+            notionEventHandler.onAnyRecipeIngredientUpdated();
+        }
 
         if(!isAnyIngredientTitleUpdated) {
             notionEventHandler.onNotThingChange();
