@@ -40,7 +40,7 @@
 
         <dependency>
             <groupId>com.github.seratch</groupId>
-            <artifactId>notion-sdk-jvm-core</artifactId>
+            <artifactId>notion-sdk-jvm-httpclient</artifactId>
             <version>${notion-sdk.version}</version>
         </dependency>
 

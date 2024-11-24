@@ -19,8 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteDataSource;
 
-import java.util.concurrent.Semaphore;
-
 public class NotionInventoryApplication {
     private static final Logger logger = LoggerFactory.getLogger(NotionInventoryApplication.class);
 
@@ -28,11 +26,10 @@ public class NotionInventoryApplication {
         logger.info("=== Notion Inventory ===");
 
         var config = NotionConfig.useDefault();
-
         var notionClient = new NotionClient(config.getNotionApiKey());
+        notionClient.setHttpClient(new LimitedRequestHttpClient());
         notionClient.setLogger(new NotionSlf4jLoggerDelegate());
-        var semaphore = new Semaphore(1);
-        var notionRepo = new NotionRepository(notionClient, semaphore);
+        var notionRepo = new NotionRepository(notionClient);
 
         SQLiteDataSource dataSource = new SQLiteDataSource();
         dataSource.setUrl(config.getSqlitePath());
@@ -56,10 +53,8 @@ public class NotionInventoryApplication {
         NotionEventHandlerImpl notionEventHandler = new CustomNotionEventHandlerImpl(localRepository);
         var eventListener = new NotionEventListener(notionRepo, localRepository, notionEventHandler);
 
-        ApplicationRunner applicationRunner = new ApplicationRunner(config, eventListener, semaphore);
+        ApplicationRunner applicationRunner = new ApplicationRunner(eventListener);
         applicationRunner.run();
-
-
     }
 
     private static void initDatabaseSchema(SqlSessionFactory sqlSessionFactory) {
