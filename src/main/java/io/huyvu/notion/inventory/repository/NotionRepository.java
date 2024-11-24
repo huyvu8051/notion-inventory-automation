@@ -6,6 +6,7 @@ import notion.api.v1.model.databases.query.sort.QuerySortDirection;
 import notion.api.v1.model.databases.query.sort.QuerySortTimestamp;
 import notion.api.v1.model.pages.Page;
 import notion.api.v1.request.databases.QueryDatabaseRequest;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,20 +24,16 @@ public class NotionRepository {
     }
 
     public List<Page> findAllIngredients() {
-        var request = new QueryDatabaseRequest(NOTION_INGREDIENT_DB_ID);
-
-        var querySort = new QuerySort();
-        querySort.setTimestamp(QuerySortTimestamp.LastEditedTime);
-        querySort.setDirection(QuerySortDirection.Descending);
-
-        request.setSorts(List.of(querySort));
-        request.setPageSize(5);
-        var queryResults = notionClient.queryDatabase(request);
-        return queryResults.getResults();
+        return getLastUpdated5Pages(NOTION_INGREDIENT_DB_ID);
     }
 
     public List<Page> findAllRecipes() {
-        var request = new QueryDatabaseRequest(NOTION_RECIPE_DB_ID);
+        return getLastUpdated5Pages(NOTION_RECIPE_DB_ID);
+    }
+
+    @NotNull
+    private List<Page> getLastUpdated5Pages(String notionIngredientDbId) {
+        var request = new QueryDatabaseRequest(notionIngredientDbId);
 
         var querySort = new QuerySort();
         querySort.setTimestamp(QuerySortTimestamp.LastEditedTime);
@@ -47,4 +44,6 @@ public class NotionRepository {
         var queryResults = notionClient.queryDatabase(request);
         return queryResults.getResults();
     }
+
+
 }

@@ -5,12 +5,12 @@ public class NotionConfig {
 
     private static final String SQLITE_PATH = "jdbc:sqlite:notion-inventory-sqlite.db";
     private static final String MAPPERS_PATH = "io.huyvu.notion.inventory.mapper";
-    private static final String NOTION_API_KEY = System.getenv("NOTION_API_KEY");
-    public static final String NOTION_MEAL_PLAN_DB_ID = System.getenv("NOTION_MEAL_PLAN_DB_ID");
-    public static final String NOTION_INGREDIENT_DB_ID = System.getenv("NOTION_INGREDIENT_DB_ID");
-    public static final String NOTION_RECIPE_DB_ID = System.getenv("NOTION_RECIPE_DB_ID");
-    public static final String OPENAI_API_KEY = System.getenv("OPENAI_API_KEY");
-    public static final String LOG_LEVEL = System.getenv("LOG_LEVEL");
+    private static final String NOTION_API_KEY = System.getProperty("NOTION_API_KEY", "empty");
+    public static final String NOTION_MEAL_PLAN_DB_ID = System.getProperty("NOTION_MEAL_PLAN_DB_ID", "empty");
+    public static final String NOTION_INGREDIENT_DB_ID = System.getProperty("NOTION_INGREDIENT_DB_ID", "empty");
+    public static final String NOTION_RECIPE_DB_ID = System.getProperty("NOTION_RECIPE_DB_ID", "empty");
+    public static final String OPENAI_API_KEY = System.getProperty("OPENAI_API_KEY", "empty");
+    public static final String LOG_LEVEL = System.getProperty("LOG_LEVEL", "INFO");
     private int interval = 3000;
 
 

@@ -15,6 +15,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteDataSource;
@@ -26,19 +27,10 @@ public class NotionInventoryApplication {
         logger.info("=== Notion Inventory ===");
 
         var config = NotionConfig.useDefault();
-        var notionClient = new NotionClient(config.getNotionApiKey());
-        notionClient.setHttpClient(new LimitedRequestHttpClient());
-        notionClient.setLogger(new NotionSlf4jLoggerDelegate());
+        var notionClient = getNotionClient(config);
         var notionRepo = new NotionRepository(notionClient);
 
-        SQLiteDataSource dataSource = new SQLiteDataSource();
-        dataSource.setUrl(config.getSqlitePath());
-        TransactionFactory transactionFactory = new JdbcTransactionFactory();
-        Environment environment = new Environment("development", transactionFactory, dataSource);
-        Configuration configuration = new Configuration(environment);
-
-        configuration.addMappers(config.getMappersPath());
-        var sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
+        var sqlSessionFactory = getSqlSessionFactory(config);
 
         initDatabaseSchema(sqlSessionFactory);
 
@@ -57,7 +49,26 @@ public class NotionInventoryApplication {
         applicationRunner.run();
     }
 
-    private static void initDatabaseSchema(SqlSessionFactory sqlSessionFactory) {
+    @NotNull
+    public static NotionClient getNotionClient(NotionConfig config) {
+        var notionClient = new NotionClient(config.getNotionApiKey());
+        notionClient.setHttpClient(new LimitedRequestHttpClient());
+        notionClient.setLogger(new NotionSlf4jLoggerDelegate());
+        return notionClient;
+    }
+
+    public static SqlSessionFactory getSqlSessionFactory(NotionConfig config) {
+        SQLiteDataSource dataSource = new SQLiteDataSource();
+        dataSource.setUrl(config.getSqlitePath());
+        TransactionFactory transactionFactory = new JdbcTransactionFactory();
+        Environment environment = new Environment("development", transactionFactory, dataSource);
+        Configuration configuration = new Configuration(environment);
+
+        configuration.addMappers(config.getMappersPath());
+        return new SqlSessionFactoryBuilder().build(configuration);
+    }
+
+    public static void initDatabaseSchema(SqlSessionFactory sqlSessionFactory) {
         logger.info("Initializing database schema...");
         try (var sqlSession = sqlSessionFactory.openSession()) {
             var mapper = sqlSession.getMapper(InitSchemaMapper.class);
