@@ -8,6 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -33,15 +37,25 @@ class NotionRepositoryTest {
     }
 
     @Test
-    void findAllIngredients() {
+    void findAllIngredients() throws ExecutionException, InterruptedException {
 
-        // Submit tasks to the executor
-        for (int number : IntStream.range(0, 3).toArray()) {
-            var allIngredients = notionRepository.findAllIngredients();
-            log.info("Time {} size {}", number, allIngredients.size());
+        try (ExecutorService executorService = Executors.newFixedThreadPool(3)) {
+
+            var futures = IntStream.range(0, 5)
+                    .mapToObj(number -> CompletableFuture.runAsync(() -> {
+                        var allIngredients = notionRepository.findAllIngredients();
+                        log.info("ID {} size {}", number, allIngredients.size());
+                    }))
+                    .toArray(CompletableFuture[]::new);
+
+            CompletableFuture.allOf(futures).get();
+
+            // Shut down the executor
+            executorService.shutdown();
         }
-        verify(httpClient, times(3)).postTextBody(any(), any(), any(), any(), any());
 
+        // Verify that the method was called 3 times
+        verify(httpClient, times(5)).postTextBody(any(), any(), any(), any(), any());
 
     }
 
