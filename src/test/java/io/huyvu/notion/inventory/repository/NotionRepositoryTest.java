@@ -11,8 +11,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.HashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.stream.IntStream;
 
@@ -465,7 +463,7 @@ class NotionRepositoryTest {
                                   "request_id": "ec29305a-8a95-45b4-b1f7-3f6cadc36310"
                                 }""", new HashMap<>()));
         NotionClient notionClient = new NotionClient();
-        notionClient.setHttpClient(new LimitedRequestHttpClient(httpClient, new ScheduledThreadPoolExecutor(3)));
+        notionClient.setHttpClient(new LimitedRequestHttpClient(httpClient, new ScheduledThreadPoolExecutor(1)));
         notionClient.setLogger(new NotionSlf4jLoggerDelegate());
         notionClient.setHttpClient(httpClient);
         notionRepository = new NotionRepository(notionClient);
@@ -474,15 +472,12 @@ class NotionRepositoryTest {
 
     @Test
     void findAllIngredients() {
-        ExecutorService executorService = Executors.newFixedThreadPool(3);
 
         // Submit tasks to the executor
-        for (int number : IntStream.range(0, 10).toArray()) {
-            // executorService.submit(() -> notionRepository.findAllIngredients());
+        for (int number : IntStream.range(0, 1000).toArray()) {
             notionRepository.findAllIngredients();
         }
-        executorService.shutdown();
-        verify(httpClient, times(10)).postTextBody(any(), any(), any(), any(), any());
+        verify(httpClient, times(1000)).postTextBody(any(), any(), any(), any(), any());
 
 
     }

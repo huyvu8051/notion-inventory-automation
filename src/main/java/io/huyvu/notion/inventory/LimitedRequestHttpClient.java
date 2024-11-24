@@ -13,7 +13,7 @@ import java.util.concurrent.*;
 
 public class LimitedRequestHttpClient implements NotionHttpClient {
     private final NotionHttpClient delegate;
-    private final Semaphore semaphore  = new Semaphore(1);;
+    private final Semaphore semaphore  = new Semaphore(1);
     private final ScheduledExecutorService executor;
 
     public LimitedRequestHttpClient() {
