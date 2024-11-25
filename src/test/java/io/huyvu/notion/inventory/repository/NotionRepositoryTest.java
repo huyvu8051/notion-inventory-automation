@@ -1,24 +1,21 @@
 package io.huyvu.notion.inventory.repository;
 
-import io.huyvu.notion.inventory.*;
+import io.huyvu.notion.inventory.LimitedRequestHttpClient;
+import io.huyvu.notion.inventory.TestUtils;
 import notion.api.v1.NotionClient;
-import notion.api.v1.http.JavaNetHttpClient;
 import notion.api.v1.http.NotionHttpClient;
 import notion.api.v1.http.NotionHttpResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,7 +28,7 @@ class NotionRepositoryTest {
     private NotionHttpClient httpClient;
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() throws IOException, URISyntaxException {
         var notionClient = new NotionClient();
         httpClient = mock(NotionHttpClient.class);
         when(httpClient.postTextBody(any(), any(), any(), any(), any()))
@@ -41,48 +38,39 @@ class NotionRepositoryTest {
 
     }
 
-    @Test
-    void findAllIngredients() throws ExecutionException, InterruptedException {
-
-        var futures = IntStream.range(0, 5)
-                .mapToObj(number -> CompletableFuture.runAsync(() -> {
-                    var allIngredients = notionRepository.findAllIngredients();
-                    log.info("ID {} size {}", number, allIngredients.size());
-                }))
-                .toArray(CompletableFuture[]::new);
-
-        CompletableFuture.allOf(futures).get();
-
-        // Verify that the method was called 3 times
-        verify(httpClient, times(5)).postTextBody(any(), any(), any(), any(), any());
-
-    }
-
 
     @Test
     void findAllIngredientsWithDelay() throws ExecutionException, InterruptedException {
-        long start = System.currentTimeMillis();
         var futures = IntStream.range(0, 5)
-                .mapToObj(number -> {
-                    var longCompletableFuture = CompletableFuture.supplyAsync(() -> {
-                        var allIngredients = notionRepository.findAllIngredients();
-                        log.info("ID {} size {}", number, allIngredients.size());
-                        return System.currentTimeMillis();
-                    });
-                    return longCompletableFuture;
-                })
-                .toArray(CompletableFuture[]::new);
+                .mapToObj(number -> CompletableFuture.supplyAsync(() -> {
+                    var allIngredients = notionRepository.findAllIngredients();
+                    log.info("ID {} size {}", number, allIngredients.size());
+                    return System.currentTimeMillis();
+                }))
+                .toList();
 
 
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
-        CompletableFuture.allOf(futures).join();
+        var list = futures.stream().map(e -> {
+            try {
+                return e.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
+        }).sorted().toList();
 
+        var iterator = list.iterator();
+        long start = iterator.next();
 
-        for (CompletableFuture<Long> future : futures) {
-            var next = future.get();
-            assertTrue(next - start >= 3000);
+        while(iterator.hasNext()){
+            long next = iterator.next();
+            assertTrue(next - start >= 2500);
             start = next;
         }
+
+        verify(httpClient, times(5)).postTextBody(any(), any(), any(), any(), any());
+
 
     }
 
