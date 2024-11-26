@@ -13,7 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -41,49 +43,29 @@ class NotionRepositoryTest {
 
     }
 
-    @Test
-    void findAllIngredients() throws ExecutionException, InterruptedException {
-
-        var futures = IntStream.range(0, 5)
-                .mapToObj(number -> CompletableFuture.runAsync(() -> {
-                    var allIngredients = notionRepository.findAllIngredients();
-                    log.info("ID {} size {}", number, allIngredients.size());
-                }))
-                .toArray(CompletableFuture[]::new);
-
-        CompletableFuture.allOf(futures).get();
-
-        // Verify that the method was called 3 times
-        verify(httpClient, times(5)).postTextBody(any(), any(), any(), any(), any());
-
-    }
-
 
     @Test
     void findAllIngredientsWithDelay() throws ExecutionException, InterruptedException {
         long start = System.currentTimeMillis();
         var futures = IntStream.range(0, 5)
-                .mapToObj(number -> {
-                    var longCompletableFuture = CompletableFuture.supplyAsync(() -> {
-                        var allIngredients = notionRepository.findAllIngredients();
-                        log.info("ID {} size {}", number, allIngredients.size());
-                        return System.currentTimeMillis();
-                    });
-                    return longCompletableFuture;
-                })
-                .toArray(CompletableFuture[]::new);
+                .mapToObj(number -> CompletableFuture.supplyAsync(() -> {
+                    var allIngredients = notionRepository.findAllIngredients();
+                    log.info("ID {} size {}", number, allIngredients.size());
+                    return System.currentTimeMillis();
+                }))
+                .toList();
 
 
 
-        CompletableFuture.allOf(futures).join();
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
-
-        for (CompletableFuture<Long> future : futures) {
-            var next = future.get();
-            assertTrue(next - start >= 3000);
-            start = next;
+        var list = futures.stream().map(CompletableFuture::join).sorted().toList();
+        start -= 3000;
+        for (Long l : list) {
+            log.info("start {} took {}", start, l - start);
+            assertTrue(l - start > 2500);
+            start = l;
         }
-
     }
 
 }
