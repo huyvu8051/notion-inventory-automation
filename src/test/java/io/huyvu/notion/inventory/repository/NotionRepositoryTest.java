@@ -1,31 +1,25 @@
 package io.huyvu.notion.inventory.repository;
 
-import io.huyvu.notion.inventory.*;
+import io.huyvu.notion.inventory.LimitedRequestHttpClient;
+import io.huyvu.notion.inventory.TestUtils;
 import notion.api.v1.NotionClient;
-import notion.api.v1.http.JavaNetHttpClient;
 import notion.api.v1.http.NotionHttpClient;
 import notion.api.v1.http.NotionHttpResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class NotionRepositoryTest {
     private static final Logger log = LoggerFactory.getLogger(NotionRepositoryTest.class);
@@ -33,7 +27,7 @@ class NotionRepositoryTest {
     private NotionHttpClient httpClient;
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() throws IOException, URISyntaxException {
         var notionClient = new NotionClient();
         httpClient = mock(NotionHttpClient.class);
         when(httpClient.postTextBody(any(), any(), any(), any(), any()))
@@ -45,7 +39,7 @@ class NotionRepositoryTest {
 
 
     @Test
-    void findAllIngredientsWithDelay() throws ExecutionException, InterruptedException {
+    void findAllIngredientsWithDelay() {
         long start = System.currentTimeMillis();
         var futures = IntStream.range(0, 5)
                 .mapToObj(number -> CompletableFuture.supplyAsync(() -> {
@@ -56,6 +50,7 @@ class NotionRepositoryTest {
                 .toList();
 
 
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
@@ -66,6 +61,7 @@ class NotionRepositoryTest {
             assertTrue(l - start > 2500);
             start = l;
         }
+
     }
 
 }
