@@ -18,8 +18,7 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class NotionRepositoryTest {
     private static final Logger log = LoggerFactory.getLogger(NotionRepositoryTest.class);
@@ -61,6 +60,9 @@ class NotionRepositoryTest {
             assertTrue(l - start > 2500);
             start = l;
         }
+
+
+        verify(httpClient, times(5)).postTextBody(any(), any(), any(), any(), any());
 
     }
 
